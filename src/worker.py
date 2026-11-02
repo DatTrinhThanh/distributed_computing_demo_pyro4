@@ -12,4 +12,4 @@ class Worker:
 
 
 if __name__ == "__main__":
-    Pyro4.Daemon.serveSimple({Worker: "factorial.worker"}, ns=True)
+    Pyro4.Daemon.serveSimple({Worker: "worker.factorial"}, ns=True)
