@@ -4,7 +4,7 @@ class Master:
     def __init__(self):
         self.workers: set[Pyro4.Proxy] = set()
 
-    def find_workers(self):
+    def find_workers(self) -> None:
         with Pyro4.locateNS() as ns:
             for _, worker_uri in ns.list(prefix="worker.factorial").items():
                 self.workers.add(Pyro4.Proxy(worker_uri))
