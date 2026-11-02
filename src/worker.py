@@ -1,4 +1,11 @@
 import Pyro4
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-P", "--port", help="worker port to register with the Pyro daemon", type=int
+)
+args = parser.parse_args()
 
 
 @Pyro4.expose
@@ -12,4 +19,6 @@ class Worker:
 
 
 if __name__ == "__main__":
-    Pyro4.Daemon.serveSimple({Worker: "worker.factorial"}, ns=True)
+    Pyro4.Daemon.serveSimple(
+        {Worker: f"worker.factorial.{args.port}"}, port=args.port, ns=True
+    )
