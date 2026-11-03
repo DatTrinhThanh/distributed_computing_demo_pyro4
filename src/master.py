@@ -15,7 +15,7 @@ class Master:
         self.__BASE_CASE = 1
 
     def calc_factorial(self, n: int) -> int:
-        tasks = self.distribute_factorial(n)
+        tasks = self.split_factorial(n)
         if not tasks:
             return self.__BASE_CASE
         factorial = 1
@@ -29,7 +29,7 @@ class Master:
 
         return factorial
 
-    def distribute_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
+    def split_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
         if n < self.__BASE_CASE:
             return
         chunk_size = max(1, n // len(self.workers))
