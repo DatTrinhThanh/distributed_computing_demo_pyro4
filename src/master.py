@@ -51,4 +51,4 @@ class Master:
 
 if __name__ == "__main__":
     m = Master()
-    m.calc_factorial(4)
+    print(m.calc_factorial(4))

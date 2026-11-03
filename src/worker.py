@@ -1,5 +1,6 @@
 import Pyro4
 import argparse
+import math
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -11,11 +12,7 @@ args = parser.parse_args()
 @Pyro4.expose
 class Worker:
     def compute_factorial(self, start: int, end: int) -> int:
-        res = 1
-        for n in range(start, end + 1):
-            res *= n
-
-        return res
+        return math.prod(range(start, end + 1)) 
 
 
 if __name__ == "__main__":
