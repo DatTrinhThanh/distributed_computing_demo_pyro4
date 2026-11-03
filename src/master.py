@@ -2,8 +2,10 @@ import Pyro4
 from typing import List, Optional
 import concurrent.futures
 import sys
+import time
 
 sys.excepthook = Pyro4.util.excepthook
+
 
 class Master:
     def __init__(self):
@@ -18,9 +20,7 @@ class Master:
         futures = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for worker, (start, end) in zip(self.workers, tasks):
-                futures.append(
-                    executor.submit(worker.compute_factorial, start, end)
-                )
+                futures.append(executor.submit(worker.compute_factorial, start, end))
 
             for future in concurrent.futures.as_completed(futures):
                 factorial *= future.result()
@@ -51,4 +51,7 @@ class Master:
 
 if __name__ == "__main__":
     m = Master()
-    print(m.calc_factorial(4))
+    start_time = time.time()
+    print(m.calc_factorial(59200))
+    end_time = time.time()
+    print(f"Factorial Computed after: {end_time - start_time:.2f} seconds")

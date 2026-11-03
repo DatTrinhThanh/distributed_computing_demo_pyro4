@@ -1,6 +1,9 @@
 import Pyro4
 import argparse
 import math
+import sys
+
+sys.set_int_max_str_digits(0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -12,7 +15,7 @@ args = parser.parse_args()
 @Pyro4.expose
 class Worker:
     def compute_factorial(self, start: int, end: int) -> int:
-        return math.prod(range(start, end + 1)) 
+        return math.prod(range(start, end + 1))
 
 
 if __name__ == "__main__":
