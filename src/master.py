@@ -4,6 +4,8 @@ import concurrent.futures
 import sys
 import time
 
+sys.set_int_max_str_digits(0)
+
 sys.excepthook = Pyro4.util.excepthook
 
 
