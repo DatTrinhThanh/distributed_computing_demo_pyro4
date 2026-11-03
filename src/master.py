@@ -23,7 +23,9 @@ class Master:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for worker_uri, (start, end) in zip(self.worker_uris, tasks):
                 with Pyro4.Proxy(worker_uri) as worker:
-                    futures.append(executor.submit(worker.compute_factorial, start, end))
+                    futures.append(
+                        executor.submit(worker.compute_factorial, start, end)
+                    )
 
             for future in concurrent.futures.as_completed(futures):
                 factorial *= future.result()
@@ -49,6 +51,10 @@ class Master:
         with Pyro4.locateNS() as ns:
             for _, worker_uri in ns.list(prefix="worker.factorial").items():
                 worker_uris.add(worker_uri)
+        if not worker_uris:
+            raise RuntimeError(
+                "No worker nodes found! please launch workers before running the master"
+            )
         return worker_uris
 
 
