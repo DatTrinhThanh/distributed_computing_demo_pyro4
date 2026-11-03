@@ -19,18 +19,20 @@ class Master:
         if not tasks:
             return self.__BASE_CASE
         factorial = 1
-        futures = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            for worker_uri, (start, end) in zip(self.worker_uris, tasks):
-                with Pyro4.Proxy(worker_uri) as worker:
-                    futures.append(
-                        executor.submit(worker.compute_factorial, start, end)
-                    )
+            futures = [
+                executor.submit(self.__call_worker, worker_uri, start, end)
+                for worker_uri, (start, end) in zip(self.worker_uris, tasks)
+            ]
 
             for future in concurrent.futures.as_completed(futures):
                 factorial *= future.result()
 
         return factorial
+
+    def __call_worker(self, worker_uri: str, start: int, end: int) -> int:
+        with Pyro4.Proxy(worker_uri) as worker:
+            return worker.compute_factorial(start, end)
 
     def split_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
         if n < self.__BASE_CASE:
