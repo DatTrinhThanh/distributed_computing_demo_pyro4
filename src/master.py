@@ -11,7 +11,7 @@ sys.excepthook = Pyro4.util.excepthook
 
 class Master:
     def __init__(self):
-        self.workers: set[Pyro4.Proxy] = self.find_workers()
+        self.workers = self.find_workers()
         self.__BASE_CASE = 1
 
     def calc_factorial(self, n: int) -> int:
