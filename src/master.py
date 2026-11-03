@@ -1,11 +1,31 @@
 import Pyro4
 from typing import List, Optional
+import concurrent.futures
+import sys
 
+sys.excepthook = Pyro4.util.excepthook
 
 class Master:
     def __init__(self):
         self.workers: set[Pyro4.Proxy] = self.find_workers()
         self.__BASE_CASE = 1
+
+    def calc_factorial(self, n: int) -> int:
+        tasks = self.distribute_factorial(n)
+        if not tasks:
+            return self.__BASE_CASE
+        factorial = 1
+        futures = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for worker, (start, end) in zip(self.workers, tasks):
+                futures.append(
+                    executor.submit(worker.compute_factorial, start, end)
+                )
+
+            for future in concurrent.futures.as_completed(futures):
+                factorial *= future.result()
+
+        return factorial
 
     def distribute_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
         if n < self.__BASE_CASE:
@@ -31,3 +51,4 @@ class Master:
 
 if __name__ == "__main__":
     m = Master()
+    m.calc_factorial(4)
