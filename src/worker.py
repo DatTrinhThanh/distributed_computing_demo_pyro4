@@ -10,7 +10,7 @@ args = parser.parse_args()
 
 @Pyro4.expose
 class Worker:
-    def compute_factorial(start: int, end: int) -> int:
+    def compute_factorial(self, start: int, end: int) -> int:
         res = 1
         for n in range(start, end + 1):
             res *= n
