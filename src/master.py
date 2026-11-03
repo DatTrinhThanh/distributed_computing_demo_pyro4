@@ -5,10 +5,10 @@ from typing import List, Optional
 class Master:
     def __init__(self):
         self.workers: set[Pyro4.Proxy] = self.find_workers()
+        self.__BASE_CASE = 1
 
     def distribute_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
-        BASE_CASE = 1
-        if n < BASE_CASE:
+        if n < self.__BASE_CASE:
             return
         chunk_size = max(1, n // len(self.workers))
         tasks = []
