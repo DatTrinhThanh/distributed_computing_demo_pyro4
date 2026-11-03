@@ -11,7 +11,7 @@ sys.excepthook = Pyro4.util.excepthook
 
 class Master:
     def __init__(self):
-        self.workers = self.find_workers()
+        self.worker_uris = self.find_worker_uris()
         self.__BASE_CASE = 1
 
     def calc_factorial(self, n: int) -> int:
@@ -21,8 +21,9 @@ class Master:
         factorial = 1
         futures = []
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            for worker, (start, end) in zip(self.workers, tasks):
-                futures.append(executor.submit(worker.compute_factorial, start, end))
+            for worker_uri, (start, end) in zip(self.worker_uris, tasks):
+                with Pyro4.Proxy(worker_uri) as worker:
+                    futures.append(executor.submit(worker.compute_factorial, start, end))
 
             for future in concurrent.futures.as_completed(futures):
                 factorial *= future.result()
@@ -32,23 +33,23 @@ class Master:
     def split_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
         if n < self.__BASE_CASE:
             return
-        chunk_size = max(1, n // len(self.workers))
+        chunk_size = max(1, n // len(self.worker_uris))
         tasks = []
         start = 1
 
-        for i in range(len(self.workers)):
-            end = start + chunk_size - 1 if i < len(self.workers) - 1 else n
+        for i in range(len(self.worker_uris)):
+            end = start + chunk_size - 1 if i < len(self.worker_uris) - 1 else n
             tasks.append((start, end))
             start = end + 1
 
         return tasks
 
-    def find_workers(self) -> set[Pyro4.Proxy]:
-        workers = set()
+    def find_worker_uris(self) -> set[str]:
+        worker_uris = set()
         with Pyro4.locateNS() as ns:
             for _, worker_uri in ns.list(prefix="worker.factorial").items():
-                workers.add(Pyro4.Proxy(worker_uri))
-        return workers
+                worker_uris.add(worker_uri)
+        return worker_uris
 
 
 if __name__ == "__main__":
