@@ -35,7 +35,7 @@ class Master:
             return worker.compute_factorial(start, end)
 
     def split_factorial(self, n: int) -> Optional[List[tuple[int, int]]]:
-        if n < self.__BASE_CASE:
+        if n <= self.__BASE_CASE:
             return
         chunk_size = max(1, n // len(self.worker_uris))
         tasks = []
